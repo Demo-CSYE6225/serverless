@@ -4,10 +4,8 @@ var ses = new AWS.SES({
 });
 
 exports.handler = (event, context, callback) => {
-    // console.log(event.Records[0].Sns);
-    // var event_data = [JSON.parse(event).message];
     
-    console.log("SNS Data===========>"+JSON.stringify(event));
+    console.log("SNS>"+JSON.stringify(event));
     
 
     async function mainFunction() {
@@ -16,16 +14,16 @@ exports.handler = (event, context, callback) => {
     mainFunction();
 
     function sendEmail() {
-        var sender = "admin@prod.naveenkumarbuddhala.me"
         
-        var to_address = JSON.parse(event.Records[0].Sns.Message).EmailAddress;
-        var accestokem = JSON.parse(event.Records[0].Sns.Message).AccessToken;
-
+        var send_to = JSON.parse(event.Records[0].Sns.Message).EmailAddress;
+        var token = JSON.parse(event.Records[0].Sns.Message).AccessToken;
+        var encoded = encodeURIComponent(send_to)
+        var sender = "admin@prod.naveenkumarbuddhala.me"
 
         return new Promise(function (resolve, reject) {
             var eParams = {
                 Destination: {
-                    ToAddresses: [to_address]
+                    ToAddresses: [send_to]
                 },
                 Message: {
                     Body: {
@@ -33,17 +31,17 @@ exports.handler = (event, context, callback) => {
                             //Data: links
                             Data: '<html><head>' +
                                 '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
-                                '<title>' + "Verification Email" + '</title>' +
+                                '<title>' + "Verify Email" + '</title>' +
                                 '</head><body>' +
-                                'This is the link to verify your account this link is valid for five minutes.' +
+                                'Please verify this account in 5 minutes. Click the below link.' +
                                 '<br><br>' +
-                                "<a href=\"http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "\">" +
-                                "http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "</a>"
+                                "<a href=\"http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + encoded + "&token=" + token + "\">" +
+                                "http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + encoded + "&token=" + token + "</a>"
                                 +'</body></html>'
                         }
                     },
                     Subject: {
-                        Data: "Verification Email"
+                        Data: "Account Verification"
                     }
                 },
                 Source: sender

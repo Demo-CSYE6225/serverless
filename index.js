@@ -30,18 +30,11 @@ exports.handler = (event, context, callback) => {
                 },
                 Source: sender
             };
-            ses.sendEmail(eParams, function (err, data2) {
-                if (err) {
-                    reject(new Error(err));
-                } else {
-                    context.succeed(event);
-                    resolve(data2);
-                }
+            ses.sendEmail(eParams, function (err, data2) {  if (err) reject(new Error(err));
+                 else { context.succeed(event); resolve(data2); }
             });
         });
     }
-    async function mainFunction() {
-        sendEmail()
-    }
+    async function mainFunction() { sendEmail()}
     mainFunction();
 }

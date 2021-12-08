@@ -1,20 +1,9 @@
-const AWS = require('aws-sdk');
-var ses = new AWS.SES({
-    region: 'us-east-1'
-});
+const AWS_Config = require('aws-sdk');
+var ses = new AWS_Config.SES({region: 'us-east-1'});
 
 exports.handler = (event, context, callback) => {
-    
     console.log("SNS>"+JSON.stringify(event));
-    
-
-    async function mainFunction() {
-        sendEmail()
-    }
-    mainFunction();
-
     function sendEmail() {
-        
         var send_to = JSON.parse(event.Records[0].Sns.Message).EmailAddress;
         var token = JSON.parse(event.Records[0].Sns.Message).AccessToken;
         var encoded = encodeURIComponent(send_to)
@@ -28,13 +17,8 @@ exports.handler = (event, context, callback) => {
                 Message: {
                     Body: {
                         Html: {
-                            //Data: links
-                            Data: '<html><head>' +
-                                '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
-                                '<title>' + "Verify Email" + '</title>' +
-                                '</head><body>' +
-                                'Please verify this account in 5 minutes. Click the below link.' +
-                                '<br><br>' +
+                            Data: '<html><head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> <title>' + "Verify Email" + '</title>' +
+                                '</head><body> Please verify this account in 5 minutes. Click the below link. <br><br>' +
                                 "<a href=\"http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + encoded + "&token=" + token + "\">" +
                                 "http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + encoded + "&token=" + token + "</a>"
                                 +'</body></html>'
@@ -56,4 +40,8 @@ exports.handler = (event, context, callback) => {
             });
         });
     }
+    async function mainFunction() {
+        sendEmail()
+    }
+    mainFunction();
 }

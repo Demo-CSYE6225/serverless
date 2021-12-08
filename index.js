@@ -1,40 +1,61 @@
-const AWS_Config = require('aws-sdk');
-var ses = new AWS_Config.SES({region: 'us-east-1'});
+const AWS = require('aws-sdk');
+var ses = new AWS.SES({
+    region: 'us-east-1'
+});
 
 exports.handler = (event, context, callback) => {
-    console.log("SNS>"+JSON.stringify(event));
+    // console.log(event.Records[0].Sns);
+    // var event_data = [JSON.parse(event).message];
+    
+    console.log("SNS Data===========>"+JSON.stringify(event));
+    
+
+    async function mainFunction() {
+        sendEmail()
+    }
+    mainFunction();
+
     function sendEmail() {
-        var send_to = JSON.parse(event.Records[0].Sns.Message).EmailAddress;
-        var token = JSON.parse(event.Records[0].Sns.Message).AccessToken;
-        var encoded = encodeURIComponent(send_to)
         var sender = "admin@prod.naveenkumarbuddhala.me"
+        
+        var to_address = JSON.parse(event.Records[0].Sns.Message).EmailAddress;
+        var accestokem = JSON.parse(event.Records[0].Sns.Message).AccessToken;
+
 
         return new Promise(function (resolve, reject) {
             var eParams = {
                 Destination: {
-                    ToAddresses: [send_to]
+                    ToAddresses: [to_address]
                 },
                 Message: {
                     Body: {
                         Html: {
-                            Data: '<html><head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> <title>' + "Verify Email" + '</title>' +
-                                '</head><body> Please verify this account in 5 minutes. Click the below link. <br><br>' +
-                                "<a href=\"http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + encoded + "&token=" + token + "\">" +
-                                "http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + encoded + "&token=" + token + "</a>"
+                            //Data: links
+                            Data: '<html><head>' +
+                                '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
+                                '<title>' + "Verification Email" + '</title>' +
+                                '</head><body>' +
+                                'This is the link to verify your account this link is valid for five minutes.' +
+                                '<br><br>' +
+                                "<a href=\"http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "\">" +
+                                "http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "</a>"
                                 +'</body></html>'
                         }
                     },
                     Subject: {
-                        Data: "Account Verification"
+                        Data: "Verification Email"
                     }
                 },
                 Source: sender
             };
-            ses.sendEmail(eParams, function (err, data2) {  if (err) reject(new Error(err));
-                 else { context.succeed(event); resolve(data2); }
+            ses.sendEmail(eParams, function (err, data2) {
+                if (err) {
+                    reject(new Error(err));
+                } else {
+                    context.succeed(event);
+                    resolve(data2);
+                }
             });
         });
     }
-    async function mainFunction() { sendEmail()}
-    mainFunction();
 }

@@ -37,8 +37,8 @@ exports.handler = (event, context, callback) => {
                                 '</head><body>' +
                                 'This is the link to verify your account this link is valid for five minutes.' +
                                 '<br><br>' +
-                                "<a href=\"http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "\">" +
-                                "http://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "</a>"
+                                "<a href=\"https://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "\">" +
+                                "https://" + "prod.naveenkumarbuddhala.me" + "/v1/verifyUserEmail?email=" + to_address + "&token=" + accestokem + "</a>"
                                 +'</body></html>'
                         }
                     },
